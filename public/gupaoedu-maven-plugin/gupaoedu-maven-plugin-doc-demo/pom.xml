@@ -40,6 +40,7 @@
 		<!-- dependency versions -->
 		<spring.version>3.2.6.RELEASE</spring.version>
 		<servlet.api.version>2.4</servlet.api.version>
+		<core.common.version>1.0.0</core.common.version>
 	</properties>
 
 	<dependencies>
@@ -149,8 +150,8 @@
 		
 		<dependency>  
           <groupId>javax.core.common</groupId>  
-          <artifactId>common-doc</artifactId>  
-          <version>1.0.0</version>  
+          <artifactId>core-common-doc</artifactId>  
+          <version>${core.common.version}</version>  
         </dependency>
 		
 	</dependencies>
@@ -186,7 +187,7 @@
 					</compilerArguments>
 				</configuration>
 			</plugin>
-
+			
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.5</version>
@@ -322,13 +323,14 @@
 				<version>2.6.8</version>
 			</plugin>
 			<plugin>
-				<groupId>com.gupaoedu</groupId>
-				<artifactId>maven-plugin-doc</artifactId>
+				<groupId>javax.core.common</groupId>
+				<artifactId>core-maven-plugin-doc</artifactId>
 				<version>1.0.0</version>
 				<configuration>
 					<classPath>${basedir}/target/classes</classPath>
-					<basePage>com.gupaoedu</basePage>
-					<targetFile>C:/Users/Lily/Desktop/open-api.html</targetFile>
+					<libDir>${basedir}/target/${project.artifactId}/WEB-INF/lib</libDir>
+					<basePackage>com.gupaoedu</basePackage>
+					<targetFile>${basedir}/target/${project.artifactId}/open-api.html</targetFile>
 					<host>api.gupaoedu.com</host>
 				</configuration>
 				<executions>
@@ -340,6 +342,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			
 		</plugins>
 		<pluginManagement>
 			<plugins>

@@ -18,7 +18,7 @@ public class RegAction {
 	@Api(author="Tom",
 		createtime="2016-12-04",
 		name="注册接口",
-		desc="用户可以通过填写用户名和密码在系统中注册一个新的账号",
+		desc="用户可以通过填写用户名和密码在系统中注册一个新账号",
 		params={
 				@Rule(name="username",desc="用户名"),
 				@Rule(name="password",desc="密码"),
