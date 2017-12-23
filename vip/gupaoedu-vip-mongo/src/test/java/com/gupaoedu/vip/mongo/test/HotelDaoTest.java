@@ -39,6 +39,8 @@ public class HotelDaoTest {
 		
 //		System.out.println(JSON.toJSONString(result, true));
 		
+//		List<Hotel> result = hotelDao.getById("5a3a53d9442db6c6c0f68e3d");
+//		System.out.println(JSON.toJSONString(result, true));
 		
 		List<Hotel> result = hotelDao.getAll();
 		System.out.println(JSON.toJSONString(result, true));

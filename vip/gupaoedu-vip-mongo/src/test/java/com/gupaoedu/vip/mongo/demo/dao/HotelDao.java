@@ -15,17 +15,19 @@ import com.gupaoedu.vip.mongo.demo.entity.Hotel;
 @Repository
 public class HotelDao extends BaseDaoSupport<Hotel, Long>{
 	
-	public void getByName(String name){
+	public List<Hotel> getById(String id){
 		
 		QueryRule queryRule = QueryRule.getInstance();
+		queryRule.andEqual(this.getPKColumn(), id);
 		
-		super.find(queryRule);
+		return super.find(queryRule);
 		
 	}
 	
 	public List<Hotel> getAll(){
 		
 		QueryRule queryRule = QueryRule.getInstance();
+		queryRule.addAscOrder("price");
 		
 		return super.find(queryRule);
 		
@@ -41,7 +43,7 @@ public class HotelDao extends BaseDaoSupport<Hotel, Long>{
 
 	@Override
 	protected String getPKColumn() {
-		return "id";
+		return "_id";
 	}
 	
 }
