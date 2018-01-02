@@ -1,3 +1,5 @@
+## Spring Framework 3.2.6.RELEASE 中文注释版
+此版本源码中的所有中文注释全部由Tom老师纯手工添加，请珍惜。
 ## Spring Framework
 The Spring Framework provides a comprehensive programming and configuration
 model for modern Java-based enterprise applications - on any kind of deployment
