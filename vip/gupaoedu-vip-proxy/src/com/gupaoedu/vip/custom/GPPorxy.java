@@ -16,8 +16,8 @@ public class GPPorxy {
 	
 	private static String ln = "\r\n";
 	
+	
 	public static Object newProxyInstance(GPClassLoader classLoader,Class<?>[] interfaces,GPInvocationHandler h){
-		
 		
 		try{
 			//1、生成源代码
@@ -53,7 +53,6 @@ public class GPPorxy {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		
 		return null;
 	}
