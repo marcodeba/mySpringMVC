@@ -1,18 +1,15 @@
 package com.gupaoedu.vip.pattern.singleton.test;
 
 import com.gupaoedu.vip.pattern.singleton.lazy.LazyOne;
+import com.gupaoedu.vip.pattern.singleton.register.BeanFactory;
 
 import java.util.concurrent.CountDownLatch;
 
 /**
- * Created by Tom on 2018/3/7.
+ * Created by Tom on 2018/3/8.
  */
-public class ThreadSafeTest {
-
-
+public class BeanFactoryTest {
     public static void main(String[] args) {
-
-
 
         int count = 200;
 
@@ -36,7 +33,7 @@ public class ThreadSafeTest {
                         }
 
                         //必然会调用，可能会有很多线程同时去访问getInstance()
-                        Object obj = LazyOne.getInstance();
+                        Object obj = BeanFactory.getBean("com.gupaoedu.vip.pattern.singleton.test.Pojo");;
                         System.out.println(System.currentTimeMillis() + ":" + obj);
 
                     }catch (Exception e){
@@ -53,17 +50,5 @@ public class ThreadSafeTest {
         System.out.println("总耗时：" + (end - start));
 
 
-//        CountDownLatch 并不是这样子用,实际应用场景中不要学老师这样投机取巧
-
-
-
-
-
-       // Color.INSTANCE.getInstance();
-
-
-
-
     }
-
 }
