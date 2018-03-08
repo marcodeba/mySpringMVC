@@ -35,6 +35,15 @@ public class ThreadSafeTest {
 //                @Override
 //                public void run() {
 //                  // syncSet.add(Hungry.getInstance());
+
+
+                        try {
+                //            latch.await();
+                //            Thread.sleep(1000L);
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+
 //
 ////                    Object obj = LazyOne.getInstance();
 ////                    System.out.println(System.currentTimeMillis() + ":" + obj);
@@ -56,12 +65,7 @@ public class ThreadSafeTest {
         long end = System.currentTimeMillis();
         System.out.println("总耗时：" + (end - start));
 
-        try {
-//            latch.await();
-//            Thread.sleep(1000L);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+
     */
 
 
