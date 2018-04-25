@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class GPHandlerMapping {
     private Object controller;
     private Method method;
-    private Pattern pattern;
+    private Pattern pattern;  //url的封装
 
     public GPHandlerMapping(Pattern pattern,Object controller, Method method) {
         this.controller = controller;

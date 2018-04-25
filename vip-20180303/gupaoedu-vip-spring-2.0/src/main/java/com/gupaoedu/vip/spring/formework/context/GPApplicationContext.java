@@ -12,10 +12,7 @@ import com.gupaoedu.vip.spring.formework.core.BeanFactory;
 import jdk.nashorn.internal.runtime.ECMAException;
 
 import java.lang.reflect.Field;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -59,8 +56,8 @@ public class GPApplicationContext implements BeanFactory {
         doAutowrited();
 
 
-        MyAction myAction = (MyAction)this.getBean("myAction");
-        myAction.query(null,null,"任性的Tom老师");
+//        MyAction myAction = (MyAction)this.getBean("myAction");
+//        myAction.query(null,null,"任性的Tom老师");
     }
 
 
@@ -118,7 +115,7 @@ public class GPApplicationContext implements BeanFactory {
 
             try {
 
-                System.out.println("=======================" +instance +"," + autowiredBeanName + "," + this.beanWrapperMap.get(autowiredBeanName));
+                //System.out.println("=======================" +instance +"," + autowiredBeanName + "," + this.beanWrapperMap.get(autowiredBeanName));
                 field.set(instance,this.beanWrapperMap.get(autowiredBeanName).getWrappedInstance());
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -241,6 +238,23 @@ public class GPApplicationContext implements BeanFactory {
         }
 
         return null;
+    }
+
+
+
+
+    public String[] getBeanDefinitionNames() {
+        return this.beanDefinitionMap.keySet().toArray(new String[this.beanDefinitionMap.size()]);
+    }
+
+
+    public int getBeanDefinitionCount() {
+        return  this.beanDefinitionMap.size();
+    }
+
+
+    public Properties getConfig(){
+        return this.reader.getConfig();
     }
 
 }

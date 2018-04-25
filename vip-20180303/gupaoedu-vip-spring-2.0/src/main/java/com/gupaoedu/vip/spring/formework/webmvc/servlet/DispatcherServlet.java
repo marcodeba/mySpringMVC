@@ -1,22 +1,27 @@
 package com.gupaoedu.vip.spring.formework.webmvc.servlet;
 
+import com.gupaoedu.vip.spring.formework.annotation.GPController;
+import com.gupaoedu.vip.spring.formework.annotation.GPRequestMapping;
+import com.gupaoedu.vip.spring.formework.annotation.GPRequestParam;
 import com.gupaoedu.vip.spring.formework.context.GPApplicationContext;
 import com.gupaoedu.vip.spring.formework.webmvc.GPHandlerAdapter;
 import com.gupaoedu.vip.spring.formework.webmvc.GPHandlerMapping;
 import com.gupaoedu.vip.spring.formework.webmvc.GPModelAndView;
+import com.gupaoedu.vip.spring.formework.webmvc.GPViewResolver;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Tom on 2018/4/21.
@@ -35,7 +40,9 @@ public class DispatcherServlet extends HttpServlet {
     //它牛B到直接干掉了Struts、Webwork等MVC框架
     private List<GPHandlerMapping> handlerMappings = new ArrayList<GPHandlerMapping>();
 
-    private List<GPHandlerAdapter> handlerAdapters = new ArrayList<GPHandlerAdapter>();
+    private Map<GPHandlerMapping,GPHandlerAdapter> handlerAdapters = new HashMap<GPHandlerMapping, GPHandlerAdapter>();
+
+    private List<GPViewResolver> viewResolvers = new ArrayList<GPViewResolver>();
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -95,14 +102,94 @@ public class DispatcherServlet extends HttpServlet {
         //Map<String,Method> map;
         //map.put(url,Method)
 
+        //首先从容器中取到所有的实例
+        String [] beanNames = context.getBeanDefinitionNames();
+        for (String beanName : beanNames){
+            Object controller = context.getBean(beanName);
+            Class<?> clazz = controller.getClass();
+            //但是不是所有的牛奶都叫特仑苏
+            if(!clazz.isAnnotationPresent(GPController.class)){continue;}
+
+            String baseUrl = "";
+
+            if(clazz.isAnnotationPresent(GPRequestMapping.class)){
+                GPRequestMapping requestMapping = clazz.getAnnotation(GPRequestMapping.class);
+                baseUrl = requestMapping.value();
+            }
+
+            //扫描所有的public方法
+            Method [] methods = clazz.getMethods();
+            for (Method method: methods) {
+                if(!method.isAnnotationPresent(GPRequestMapping.class)){ continue;}
+
+                GPRequestMapping requestMapping = method.getAnnotation(GPRequestMapping.class);
+                String regex = ("/" + baseUrl +requestMapping.value().replaceAll("\\*",".*")).replaceAll("/+","/");
+                Pattern pattern = Pattern.compile(regex);
+                this.handlerMappings.add(new GPHandlerMapping(pattern,controller,method));
+                System.out.println("Mapping: " + regex + " , " + method);
+
+            }
+
+
+
+        }
+
 
 
     }
 
     private void initHandlerAdapters(GPApplicationContext context) {
+        //在初始化阶段，我们能做的就是，将这些参数的名字或者类型按一定的顺序保存下来
+        //因为后面用反射调用的时候，传的形参是一个数组
+        //可以通过记录这些参数的位置index,挨个从数组中填值，这样的话，就和参数的顺序无关了
+
+        for (GPHandlerMapping handlerMapping : this.handlerMappings){
+
+            //每一个方法有一个参数列表，那么这里保存的是形参列表
+            Map<String,Integer> paramMapping = new HashMap<String, Integer>();
+
+
+            //这里只是出来了命名参数
+            Annotation[][] pa = handlerMapping.getMethod().getParameterAnnotations();
+            for (int i = 0; i < pa.length ; i ++) {
+                for (Annotation a : pa[i]) {
+                    if(a instanceof GPRequestParam){
+                        String paramName = ((GPRequestParam) a).value();
+                        if(!"".equals(paramName.trim())){
+                            paramMapping.put(paramName,i);
+                        }
+                    }
+                }
+            }
+
+            //接下来，我们处理非命名参数
+            //只处理Request和Response
+            Class<?>[] paramTypes = handlerMapping.getMethod().getParameterTypes();
+            for (int i = 0;i < paramTypes.length; i ++) {
+                Class<?> type = paramTypes[i];
+                if(type == HttpServletRequest.class ||
+                        type == HttpServletResponse.class){
+                    paramMapping.put(type.getName(),i);
+                }
+            }
+
+
+            this.handlerAdapters.put(handlerMapping,new GPHandlerAdapter(paramMapping));
+        }
+
     }
 
     private void initViewResolvers(GPApplicationContext context) {
+        //在页面敲一个 http://localhost/first.html
+        //解决页面名字和模板文件关联的问题
+        String templateRoot = context.getConfig().getProperty("templateRoot");
+        String templateRootPath = this.getClass().getClassLoader().getResource(templateRoot).getFile();
+
+        File templateRootDir = new File(templateRootPath);
+
+        for (File template : templateRootDir.listFiles()) {
+            this.viewResolvers.add(new GPViewResolver(template.getName(),template));
+        }
 
     }
 
@@ -132,34 +219,75 @@ public class DispatcherServlet extends HttpServlet {
         //对象.方法名才能调用
         //对象要从IOC容器中获取
 //        method.invoke(context.);
-
-        //doDispatch(req,resp);
+        try {
+            doDispatch(req, resp);
+        }catch (Exception e){
+            resp.getWriter().write("<font size='25' color='blue'>500 Exception</font><br/>Details:<br/>" + Arrays.toString(e.getStackTrace()).replaceAll("\\[|\\]","")
+                    .replaceAll("\\s","\r\n") +  "<font color='green'><i>Copyright@GupaoEDU</i></font>");
+            e.printStackTrace();
+        }
     }
 
-    private void doDispatch(HttpServletRequest req, HttpServletResponse resp) {
+    private void doDispatch(HttpServletRequest req, HttpServletResponse resp) throws  Exception{
 
-        GPHandlerMapping handler = getHandler(req);
+        //根据用户请求的URL来获得一个Handler
+            GPHandlerMapping handler = getHandler(req);
+            if(handler == null){
+                resp.getWriter().write("<font size='25' color='red'>404 Not Found</font><br/><font color='green'><i>Copyright@GupaoEDU</i></font>");
+                return;
+            }
+
+            GPHandlerAdapter ha = getHandlerAdapter(handler);
 
 
-        GPHandlerAdapter ha = getHandlerAdapter(handler);
+            //这一步只是调用方法，得到返回值
+            GPModelAndView mv = ha.handle(req, resp, handler);
 
 
-        GPModelAndView mv = ha.handle(req,resp,handler);
+            //这一步才是真的输出
+            processDispatchResult(resp, mv);
 
-        processDispatchResult(resp,mv);
 
     }
 
-    private void processDispatchResult(HttpServletResponse resp, GPModelAndView mv) {
-
+    private void processDispatchResult(HttpServletResponse resp, GPModelAndView mv) throws Exception {
         //调用viewResolver的resolveView方法
+        if(null == mv){ return;}
+
+        if(this.viewResolvers.isEmpty()){ return;}
+
+        for (GPViewResolver viewResolver: this.viewResolvers) {
+
+            if(!mv.getViewName().equals(viewResolver.getViewName())){ continue; }
+            String out = viewResolver.viewResolver(mv);
+            if(out != null){
+                resp.getWriter().write(out);
+                break;
+            }
+        }
+
     }
 
     private GPHandlerAdapter getHandlerAdapter(GPHandlerMapping handler) {
-        return null;
+        if(this.handlerAdapters.isEmpty()){return  null;}
+        return this.handlerAdapters.get(handler);
     }
 
     private GPHandlerMapping getHandler(HttpServletRequest req) {
+
+        if(this.handlerMappings.isEmpty()){ return  null;}
+
+
+        String url = req.getRequestURI();
+        String contextPath = req.getContextPath();
+        url = url.replace(contextPath,"").replaceAll("/+","/");
+
+        for (GPHandlerMapping handler : this.handlerMappings) {
+            Matcher matcher = handler.getPattern().matcher(url);
+            if(!matcher.matches()){ continue;}
+            return handler;
+        }
+
         return null;
     }
 
