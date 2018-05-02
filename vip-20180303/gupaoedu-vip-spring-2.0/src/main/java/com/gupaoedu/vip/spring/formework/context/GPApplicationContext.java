@@ -1,37 +1,36 @@
 package com.gupaoedu.vip.spring.formework.context;
 
-import com.gupaoedu.vip.spring.demo.action.MyAction;
 import com.gupaoedu.vip.spring.formework.annotation.GPAutowired;
 import com.gupaoedu.vip.spring.formework.annotation.GPController;
 import com.gupaoedu.vip.spring.formework.annotation.GPService;
-import com.gupaoedu.vip.spring.formework.beans.BeanDefinition;
-import com.gupaoedu.vip.spring.formework.beans.BeanPostProcessor;
-import com.gupaoedu.vip.spring.formework.beans.BeanWrapper;
-import com.gupaoedu.vip.spring.formework.context.support.BeanDefinitionReader;
-import com.gupaoedu.vip.spring.formework.core.BeanFactory;
-import jdk.nashorn.internal.runtime.ECMAException;
+import com.gupaoedu.vip.spring.formework.aop.GPAopConfig;
+import com.gupaoedu.vip.spring.formework.beans.GPBeanDefinition;
+import com.gupaoedu.vip.spring.formework.beans.GPBeanPostProcessor;
+import com.gupaoedu.vip.spring.formework.beans.GPBeanWrapper;
+import com.gupaoedu.vip.spring.formework.context.support.GPBeanDefinitionReader;
+import com.gupaoedu.vip.spring.formework.core.GPBeanFactory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Tom on 2018/4/21.
  */
-public class GPApplicationContext implements BeanFactory {
+public class GPApplicationContext extends GPDefaultListableBeanFactory implements GPBeanFactory {
 
     private String [] configLocations;
 
-    private BeanDefinitionReader reader;
-
-    //beanDefinitionMap用来保存配置信息
-    private Map<String,BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<String,BeanDefinition>();
+    private GPBeanDefinitionReader reader;
 
     //用来保证注册式单例的容器
     private Map<String,Object> beanCacheMap = new HashMap<String, Object>();
 
     //用来存储所有的被代理过的对象
-    private Map<String,BeanWrapper> beanWrapperMap = new ConcurrentHashMap<String, BeanWrapper>();
+    private Map<String,GPBeanWrapper> beanWrapperMap = new ConcurrentHashMap<String, GPBeanWrapper>();
 
 
     public GPApplicationContext(String ... configLocations){
@@ -42,7 +41,7 @@ public class GPApplicationContext implements BeanFactory {
 
     public void refresh(){
         //定位
-        this.reader = new BeanDefinitionReader(configLocations);
+        this.reader = new GPBeanDefinitionReader(configLocations);
 
         //加载
         List<String> beanDefinitions = reader.loadBeanDefinitions();
@@ -55,7 +54,6 @@ public class GPApplicationContext implements BeanFactory {
         //在这里自动调用getBean方法
         doAutowrited();
 
-
 //        MyAction myAction = (MyAction)this.getBean("myAction");
 //        myAction.query(null,null,"任性的Tom老师");
     }
@@ -65,22 +63,24 @@ public class GPApplicationContext implements BeanFactory {
     private void doAutowrited() {
 
 
-        for(Map.Entry<String,BeanDefinition> beanDefinitionEntry : this.beanDefinitionMap.entrySet()){
+        for(Map.Entry<String,GPBeanDefinition> beanDefinitionEntry : this.beanDefinitionMap.entrySet()){
             String beanName = beanDefinitionEntry.getKey();
 
             if(!beanDefinitionEntry.getValue().isLazyInit()){
-                getBean(beanName);
+                Object obj = getBean(beanName);
+//                System.out.println(obj.getClass());
             }
 
         }
 
 
+        for(Map.Entry<String,GPBeanWrapper> beanWrapperEntry : this.beanWrapperMap.entrySet()){
 
-        for(Map.Entry<String,BeanWrapper> beanWrapperEntry : this.beanWrapperMap.entrySet()){
-
-            populateBean(beanWrapperEntry.getKey(),beanWrapperEntry.getValue().getWrappedInstance());
+            populateBean(beanWrapperEntry.getKey(),beanWrapperEntry.getValue().getOriginalInstance());
 
         }
+
+//        System.out.println("===================");
 
 
     }
@@ -147,7 +147,7 @@ public class GPApplicationContext implements BeanFactory {
                 //用它实现类来实例化
                 if(beanClass.isInterface()){ continue; }
 
-                BeanDefinition beanDefinition = reader.registerBean(className);
+                GPBeanDefinition beanDefinition = reader.registerBean(className);
                 if(beanDefinition != null){
                     this.beanDefinitionMap.put(beanDefinition.getFactoryBeanName(),beanDefinition);
                 }
@@ -181,14 +181,14 @@ public class GPApplicationContext implements BeanFactory {
     @Override
     public Object getBean(String beanName) {
 
-        BeanDefinition  beanDefinition = this.beanDefinitionMap.get(beanName);
+        GPBeanDefinition beanDefinition = this.beanDefinitionMap.get(beanName);
 
         String className = beanDefinition.getBeanClassName();
 
         try{
 
             //生成通知事件
-            BeanPostProcessor beanPostProcessor = new BeanPostProcessor();
+            GPBeanPostProcessor beanPostProcessor = new GPBeanPostProcessor();
 
             Object instance = instantionBean(beanDefinition);
             if(null == instance){ return  null;}
@@ -196,7 +196,8 @@ public class GPApplicationContext implements BeanFactory {
             //在实例初始化以前调用一次
             beanPostProcessor.postProcessBeforeInitialization(instance,beanName);
 
-            BeanWrapper beanWrapper = new BeanWrapper(instance);
+            GPBeanWrapper beanWrapper = new GPBeanWrapper(instance);
+            beanWrapper.setAopConfig(instantionAopConfig(beanDefinition));
             beanWrapper.setPostProcessor(beanPostProcessor);
             this.beanWrapperMap.put(beanName,beanWrapper);
 
@@ -214,10 +215,40 @@ public class GPApplicationContext implements BeanFactory {
         return null;
     }
 
+    private GPAopConfig instantionAopConfig(GPBeanDefinition beanDefinition) throws  Exception{
+        GPAopConfig config = new GPAopConfig();
+        String expression = reader.getConfig().getProperty("pointCut");
+        String[] before = reader.getConfig().getProperty("aspectBefore").split("\\s");
+        String[] after = reader.getConfig().getProperty("aspectAfter").split("\\s");
+
+        String className = beanDefinition.getBeanClassName();
+        Class<?> clazz = Class.forName(className);
+
+        Pattern pattern = Pattern.compile(expression);
+
+        Class aspectClass = Class.forName(before[0]);
+        //在这里得到的方法都是原生的方法
+        for (Method m : clazz.getMethods()){
+
+            //public .* com\.gupaoedu\.vip\.spring\.demo\.service\..*Service\..*\(.*\)
+            //public java.lang.String com.gupaoedu.vip.spring.demo.service.impl.ModifyService.add(java.lang.String,java.lang.String)
+            Matcher matcher = pattern.matcher(m.toString());
+            if(matcher.matches()){
+                //能满足切面规则的类，添加的AOP配置中
+                config.put(m,aspectClass.newInstance(),new Method[]{aspectClass.getMethod(before[1]),aspectClass.getMethod(after[1])});
+            }
+        }
+
+
+
+        return  config;
+    }
+
+
 
 
     //传一个BeanDefinition，就返回一个实例Bean
-    private Object instantionBean(BeanDefinition beanDefinition){
+    private Object instantionBean(GPBeanDefinition beanDefinition){
         Object instance = null;
         String className = beanDefinition.getBeanClassName();
         try{
