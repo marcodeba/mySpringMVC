@@ -29,7 +29,7 @@ public class MyAction {
 	public GPModelAndView query(HttpServletRequest request, HttpServletResponse response,
 								@GPRequestParam("name") String name){
 		String result = queryService.query(name);
-//		System.out.println(result);
+		System.out.println(result);
 		return out(response,result);
 	}
 	
