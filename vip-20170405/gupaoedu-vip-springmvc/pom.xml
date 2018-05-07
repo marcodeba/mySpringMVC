@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.gupaoedu.vip.springmvc</groupId>
+	<groupId>com.gupaoedu.vip.gpmvc</groupId>
 	<artifactId>ROOT</artifactId>
 	<version>2.0.0</version>
 	<packaging>war</packaging>
@@ -34,17 +34,51 @@
 				<package.environment>product</package.environment>
 			</properties>
 		</profile>
-	</profiles>
-
+    </profiles>  
+    
 	<properties>
 		<!-- dependency versions -->
 		<servlet.api.version>2.4</servlet.api.version>
+		<spring.version>3.2.6.RELEASE</spring.version>
 	</properties>
 
-	<dependencies>
 
-		<!-- J2EE 标准 -->		
+
+	<dependencies>
+		
+		<!-- spring framework start -->
+		<!-- 
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		 -->
+		<!-- spring framework end -->
+		
+		
 		<!-- requied start -->
+		
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -123,7 +157,7 @@
 					<contextPath>/</contextPath>
 					<connectors>
 						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-							<port>80</port>
+							<port>8080</port>
 						</connector>
 					</connectors>
 					<scanIntervalSeconds>0</scanIntervalSeconds>
@@ -215,16 +249,6 @@
 					</execution>
 				</executions>
 				<version>1.0.5</version>
-			</plugin>
-			<plugin>
-				<groupId>net.sf.ehcache</groupId>
-				<artifactId>ehcache-core</artifactId>
-				<version>2.6.8</version>
-			</plugin>
-			<plugin>
-				<groupId>javax.core.common.doc</groupId>
-				<artifactId>maven-doc-plugin</artifactId>
-				<version>1.0.4</version>
 			</plugin>
 		</plugins>
 		<pluginManagement>
