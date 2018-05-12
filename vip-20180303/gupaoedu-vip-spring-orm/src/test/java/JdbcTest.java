@@ -19,16 +19,21 @@ public class JdbcTest {
     public static void main(String[] args) {
 
 //        List<?> result = select(Member.class);
-
-        List<?> result = select(User.class);
+        Member condition = new Member();
+        condition.setName("tom");
+//        condition.setAge(20);
+        List<?> result = select(condition);
 
         System.out.println(Arrays.toString(result.toArray()));
 
     }
 
     //我框架问世的时候，你的Member类都还没有从石头缝里蹦出来
-    private static List<?> select(Class<?> entityClass){
+    private static List<?> select(Object condition){
         try{
+
+
+            Class<?> entityClass = condition.getClass();
 
             //1、加载驱动类
             Class.forName("com.mysql.jdbc.Driver");
@@ -41,7 +46,27 @@ public class JdbcTest {
 
             //3、创建语句开始事务
             //为了简便，暂时用select * from 代替，不要说我不严谨，OK？
-            PreparedStatement pstmt = conn.prepareStatement("select * from " + table.name());
+            String sql = "select * from " + table.name();
+            StringBuffer where = new StringBuffer(" where 1=1 ");
+            Field[] fields = entityClass.getDeclaredFields();
+            for (Field field : fields) {
+                field.setAccessible(true);
+                Object value = field.get(condition);
+                if(null != value) {
+                    Class<?> clazz = field.getType();
+                    if(String.class == clazz){
+                        where.append(" and " + field.getName() + " = '" + value + "'");
+                    }else{
+                        where.append(" and " + field.getName() + " = " + value);
+                    }
+
+                }
+            }
+
+
+            System.out.println(sql + where.toString());
+
+            PreparedStatement pstmt = conn.prepareStatement(sql + where.toString());
 
             //4、执行语句集
             ResultSet rs = pstmt.executeQuery();
@@ -66,14 +91,25 @@ public class JdbcTest {
                     field.setAccessible(true);
 
                     //数据类型映射非常关键
-                    Object type = field.getType();
-                    if(type == Long.class){
-                        field.set(instance,rs.getLong(columnName));
-                    }else if(String.class == type){
-                        field.set(instance,rs.getString(columnName));
-                    }else if(Integer.class == type){
-                        field.set(instance,rs.getInt(columnName));
-                    }
+//                    Object type = field.getType();
+//                    if(type == Long.class){
+//                        field.set(instance,rs.getLong(columnName));
+//                    }else if(String.class == type){
+//                        field.set(instance,rs.getString(columnName));
+//                    }else if(Integer.class == type){
+//                        field.set(instance,rs.getInt(columnName));
+//                    }
+
+                    field.set(instance,rs.getObject(columnName));
+
+
+                    //各自的厂商实现自己的链接
+                    //MySQL为例,以下类型Java语言中是不存在的
+                    //bigint ，由开发厂商自动就映射好了
+                    //varchar
+                    //int
+//                    System.out.println(rs.getObject(columnName).getClass());
+
 
                 }
                 //===========End ORM ==============

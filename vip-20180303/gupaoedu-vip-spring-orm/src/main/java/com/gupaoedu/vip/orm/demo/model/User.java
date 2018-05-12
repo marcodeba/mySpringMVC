@@ -2,13 +2,14 @@ package com.gupaoedu.vip.orm.demo.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * Created by Tom on 2018/5/9.
  */
 @Entity
 @Table(name="t_user")
-public class User {
+public class User implements Serializable {
 
     private Integer id;
     private String username;
