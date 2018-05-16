@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gupaoedu.schedule</groupId>
-	<artifactId>ROOT</artifactId>
+	<artifactId>gupaoedu-spring-quartz</artifactId>
 	<version>2.0.0</version>
 	<packaging>jar</packaging>
 
@@ -317,16 +317,6 @@
 					</execution>
 				</executions>
 				<version>1.0.5</version>
-			</plugin>
-			<plugin>
-				<groupId>net.sf.ehcache</groupId>
-				<artifactId>ehcache-core</artifactId>
-				<version>2.6.8</version>
-			</plugin>
-			<plugin>
-				<groupId>javax.core.common.doc</groupId>
-				<artifactId>maven-doc-plugin</artifactId>
-				<version>1.0.4</version>
 			</plugin>
 		</plugins>
 		<pluginManagement>
