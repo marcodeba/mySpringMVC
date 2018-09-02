@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   name=""
+   revision="25623"
+   uuid="6db7b590-3e44-574f-9c8d-43438cef6760"
+   committed-date="2013-08-14T08:05:09.422914Z"
+   url="https://192.168.172.166./svn/maven/app-common-db-mongo/trunk"
+   repos="https://192.168.172.166./svn/maven"
+   committed-rev="18283"
+   kind="dir"
+   last-author="xieguorun"/>
+<entry
+   name="gupaoedu-vip-mongo-morphia.iml"
+   revision="0"
+   kind="file"
+   schedule="add"/>
+<entry
+   name="pom.xml"
+   committed-date="2013-08-14T08:05:09.422914Z"
+   text-time="2013-08-14T08:05:09.000000Z"
+   checksum="4d1cc8b18dd2e15efe6b1221b7aec31d"
+   committed-rev="18283"
+   kind="file"
+   last-author="xieguorun"/>
+<entry
+   name="src"
+   kind="dir"/>
+</wc-entries>
