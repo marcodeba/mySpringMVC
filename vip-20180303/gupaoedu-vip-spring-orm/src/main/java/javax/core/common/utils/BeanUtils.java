@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -209,9 +209,9 @@ public class BeanUtils extends org.apache.commons.beanutils.BeanUtils {
 	public static String getGetterName(Class type, String fieldName) {
 
 		if (type.getName().equals("boolean")) {
-			return "is" + org.apache.commons.lang.StringUtils.capitalize(fieldName);
+			return "is" + org.apache.commons.lang3.StringUtils.capitalize(fieldName);
 		} else {
-			return "get" + org.apache.commons.lang.StringUtils.capitalize(fieldName);
+			return "get" + org.apache.commons.lang3.StringUtils.capitalize(fieldName);
 		}
 	}
 

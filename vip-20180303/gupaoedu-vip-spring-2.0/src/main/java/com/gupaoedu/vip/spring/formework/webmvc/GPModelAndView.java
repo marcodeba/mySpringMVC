@@ -2,13 +2,10 @@ package com.gupaoedu.vip.spring.formework.webmvc;
 
 import java.util.Map;
 
-/**
- * Created by Tom on 2018/4/22.
- */
 public class GPModelAndView {
 
     private String viewName;
-    private Map<String,?> model;
+    private Map<String, ?> model;
 
     public GPModelAndView(String viewName, Map<String, ?> model) {
         this.viewName = viewName;

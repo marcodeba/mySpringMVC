@@ -8,11 +8,11 @@ import com.gupaoedu.vip.spring.annotation.RequestMapping;
 @Controller
 public class MyAction {
 
-		@Autowried IDemoService demoService;
-	
-		@RequestMapping("/index.html")
-		public void query(){
+    @Autowried
+    IDemoService demoService;
 
-		}
-	
+    @RequestMapping("/index.html")
+    public void query() {
+
+    }
 }

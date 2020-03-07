@@ -3,15 +3,12 @@ package com.gupaoedu.vip.spring.formework.webmvc;
 import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
-/**
- * Created by Tom on 2018/4/22.
- */
 public class GPHandlerMapping {
     private Object controller;
     private Method method;
     private Pattern pattern;  //url的封装
 
-    public GPHandlerMapping(Pattern pattern,Object controller, Method method) {
+    public GPHandlerMapping(Pattern pattern, Object controller, Method method) {
         this.controller = controller;
         this.method = method;
         this.pattern = pattern;

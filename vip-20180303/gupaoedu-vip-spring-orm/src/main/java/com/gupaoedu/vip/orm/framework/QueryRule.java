@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * 查询规则构造器，实现多条件复杂查询的条件拼接
- *  Role 角色，Rule 尺子，规则
+ * Role 角色，Rule 尺子，规则
  * Created by Tom on 2018/5/12.
  */
 public final class QueryRule implements Serializable {
@@ -33,7 +33,8 @@ public final class QueryRule implements Serializable {
     private List<QueryRule> queryRuleList = new ArrayList<QueryRule>();
     private String propertyName;
 
-    private QueryRule() {}
+    private QueryRule() {
+    }
 
     private QueryRule(String propertyName) {
         this.propertyName = propertyName;
@@ -45,6 +46,7 @@ public final class QueryRule implements Serializable {
 
     /**
      * 添加升序规则
+     *
      * @param propertyName
      * @return
      */
@@ -55,6 +57,7 @@ public final class QueryRule implements Serializable {
 
     /**
      * 添加降序规则
+     *
      * @param propertyName
      * @return
      */
@@ -84,12 +87,12 @@ public final class QueryRule implements Serializable {
     }
 
     public QueryRule andLike(String propertyName, Object value) {
-        this.ruleList.add(new Rule(LIKE, propertyName, new Object[] { value }).setAndOr(AND));
+        this.ruleList.add(new Rule(LIKE, propertyName, new Object[]{value}).setAndOr(AND));
         return this;
     }
 
     public QueryRule andEqual(String propertyName, Object value) {
-        this.ruleList.add(new Rule(EQ, propertyName, new Object[] { value }).setAndOr(AND));
+        this.ruleList.add(new Rule(EQ, propertyName, new Object[]{value}).setAndOr(AND));
         return this;
     }
 
@@ -99,7 +102,7 @@ public final class QueryRule implements Serializable {
     }
 
     public QueryRule andIn(String propertyName, List<Object> values) {
-        this.ruleList.add(new Rule(IN, propertyName, new Object[] { values }).setAndOr(AND));
+        this.ruleList.add(new Rule(IN, propertyName, new Object[]{values}).setAndOr(AND));
         return this;
     }
 
@@ -109,7 +112,7 @@ public final class QueryRule implements Serializable {
     }
 
     public QueryRule andNotIn(String propertyName, List<Object> values) {
-        this.ruleList.add(new Rule(NOTIN, propertyName, new Object[] { values }).setAndOr(AND));
+        this.ruleList.add(new Rule(NOTIN, propertyName, new Object[]{values}).setAndOr(AND));
         return this;
     }
 
@@ -120,27 +123,27 @@ public final class QueryRule implements Serializable {
 
 
     public QueryRule andNotEqual(String propertyName, Object value) {
-        this.ruleList.add(new Rule(NOTEQ, propertyName, new Object[] { value }).setAndOr(AND));
+        this.ruleList.add(new Rule(NOTEQ, propertyName, new Object[]{value}).setAndOr(AND));
         return this;
     }
 
     public QueryRule andGreaterThan(String propertyName, Object value) {
-        this.ruleList.add(new Rule(GT, propertyName, new Object[] { value }).setAndOr(AND));
+        this.ruleList.add(new Rule(GT, propertyName, new Object[]{value}).setAndOr(AND));
         return this;
     }
 
     public QueryRule andGreaterEqual(String propertyName, Object value) {
-        this.ruleList.add(new Rule(GE, propertyName, new Object[] { value }).setAndOr(AND));
+        this.ruleList.add(new Rule(GE, propertyName, new Object[]{value}).setAndOr(AND));
         return this;
     }
 
     public QueryRule andLessThan(String propertyName, Object value) {
-        this.ruleList.add(new Rule(LT, propertyName, new Object[] { value }).setAndOr(AND));
+        this.ruleList.add(new Rule(LT, propertyName, new Object[]{value}).setAndOr(AND));
         return this;
     }
 
     public QueryRule andLessEqual(String propertyName, Object value) {
-        this.ruleList.add(new Rule(LE, propertyName, new Object[] { value }).setAndOr(AND));
+        this.ruleList.add(new Rule(LE, propertyName, new Object[]{value}).setAndOr(AND));
         return this;
     }
 
@@ -166,12 +169,12 @@ public final class QueryRule implements Serializable {
     }
 
     public QueryRule orLike(String propertyName, Object value) {
-        this.ruleList.add(new Rule(LIKE, propertyName, new Object[] { value }).setAndOr(OR));
+        this.ruleList.add(new Rule(LIKE, propertyName, new Object[]{value}).setAndOr(OR));
         return this;
     }
 
     public QueryRule orEqual(String propertyName, Object value) {
-        this.ruleList.add(new Rule(EQ, propertyName, new Object[] { value }).setAndOr(OR));
+        this.ruleList.add(new Rule(EQ, propertyName, new Object[]{value}).setAndOr(OR));
         return this;
     }
 
@@ -181,7 +184,7 @@ public final class QueryRule implements Serializable {
     }
 
     public QueryRule orIn(String propertyName, List<Object> values) {
-        this.ruleList.add(new Rule(IN, propertyName, new Object[] { values }).setAndOr(OR));
+        this.ruleList.add(new Rule(IN, propertyName, new Object[]{values}).setAndOr(OR));
         return this;
     }
 
@@ -191,27 +194,27 @@ public final class QueryRule implements Serializable {
     }
 
     public QueryRule orNotEqual(String propertyName, Object value) {
-        this.ruleList.add(new Rule(NOTEQ, propertyName, new Object[] { value }).setAndOr(OR));
+        this.ruleList.add(new Rule(NOTEQ, propertyName, new Object[]{value}).setAndOr(OR));
         return this;
     }
 
     public QueryRule orGreaterThan(String propertyName, Object value) {
-        this.ruleList.add(new Rule(GT, propertyName, new Object[] { value }).setAndOr(OR));
+        this.ruleList.add(new Rule(GT, propertyName, new Object[]{value}).setAndOr(OR));
         return this;
     }
 
     public QueryRule orGreaterEqual(String propertyName, Object value) {
-        this.ruleList.add(new Rule(GE, propertyName, new Object[] { value }).setAndOr(OR));
+        this.ruleList.add(new Rule(GE, propertyName, new Object[]{value}).setAndOr(OR));
         return this;
     }
 
     public QueryRule orLessThan(String propertyName, Object value) {
-        this.ruleList.add(new Rule(LT, propertyName, new Object[] { value }).setAndOr(OR));
+        this.ruleList.add(new Rule(LT, propertyName, new Object[]{value}).setAndOr(OR));
         return this;
     }
 
     public QueryRule orLessEqual(String propertyName, Object value) {
-        this.ruleList.add(new Rule(LE, propertyName, new Object[] { value }).setAndOr(OR));
+        this.ruleList.add(new Rule(LE, propertyName, new Object[]{value}).setAndOr(OR));
         return this;
     }
 
@@ -230,7 +233,7 @@ public final class QueryRule implements Serializable {
 
     protected class Rule implements Serializable {
         private static final long serialVersionUID = 1L;
-        private int type;	//规则的类型
+        private int type;    //规则的类型
         private String property_name;
         private Object[] values;
         private int andOr = AND;
@@ -247,12 +250,12 @@ public final class QueryRule implements Serializable {
             this.type = paramInt;
         }
 
-        public Rule setAndOr(int andOr){
+        public Rule setAndOr(int andOr) {
             this.andOr = andOr;
             return this;
         }
 
-        public int getAndOr(){
+        public int getAndOr() {
             return this.andOr;
         }
 

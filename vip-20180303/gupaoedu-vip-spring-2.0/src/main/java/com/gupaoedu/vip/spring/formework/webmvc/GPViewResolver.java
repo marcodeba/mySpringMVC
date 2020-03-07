@@ -5,10 +5,6 @@ import java.io.RandomAccessFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by Tom on 2018/4/22.
- */
-
 //设计这个类的主要目的是：
 //1、讲一个静态文件变为一个动态文件
 //2、根据用户传送参数不同，产生不同的结果
@@ -18,18 +14,17 @@ public class GPViewResolver {
     private String viewName;
     private File templateFile;
 
-    public GPViewResolver(String viewName,File templateFile){
+    public GPViewResolver(String viewName, File templateFile) {
         this.viewName = viewName;
         this.templateFile = templateFile;
     }
 
-    public String viewResolver(GPModelAndView mv) throws Exception{
+    public String viewResolver(GPModelAndView mv) throws Exception {
         StringBuffer sb = new StringBuffer();
-
-        RandomAccessFile ra = new RandomAccessFile(this.templateFile,"r");
+        RandomAccessFile ra = new RandomAccessFile(this.templateFile, "r");
 
         try {
-            String line = null;
+            String line;
             while (null != (line = ra.readLine())) {
                 line = new String(line.getBytes("ISO-8859-1"), "utf-8");
                 Matcher m = matcher(line);
@@ -48,19 +43,18 @@ public class GPViewResolver {
                 }
                 sb.append(line);
             }
-        }finally {
+        } finally {
             ra.close();
         }
 
         return sb.toString();
     }
 
-    private Matcher matcher(String str){
-        Pattern pattern = Pattern.compile("￥\\{(.+?)\\}",Pattern.CASE_INSENSITIVE);
+    private Matcher matcher(String str) {
+        Pattern pattern = Pattern.compile("￥\\{(.+?)\\}", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(str);
-        return  matcher;
+        return matcher;
     }
-
 
     public String getViewName() {
         return viewName;
@@ -69,5 +63,4 @@ public class GPViewResolver {
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
-
 }
