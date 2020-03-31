@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 //2、根据用户传送参数不同，产生不同的结果
 //最终输出字符串，交给Response输出
 public class GPViewResolver {
-
     private String viewName;
     private File templateFile;
 

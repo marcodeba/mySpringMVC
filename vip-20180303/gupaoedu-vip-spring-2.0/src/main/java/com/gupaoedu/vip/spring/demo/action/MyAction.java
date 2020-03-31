@@ -15,7 +15,6 @@ import java.io.IOException;
 @GPController
 @GPRequestMapping("/web")
 public class MyAction {
-
     @GPAutowired
     IQueryService queryService;
     @GPAutowired

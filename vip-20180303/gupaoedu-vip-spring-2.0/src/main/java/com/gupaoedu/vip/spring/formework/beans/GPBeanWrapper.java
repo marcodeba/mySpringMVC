@@ -5,7 +5,6 @@ import com.gupaoedu.vip.spring.formework.aop.GPAopProxy;
 import com.gupaoedu.vip.spring.formework.core.GPFactoryBean;
 
 public class GPBeanWrapper extends GPFactoryBean {
-
     private GPAopProxy aopProxy = new GPAopProxy();
     //还会用到  观察者  模式
     //1、支持事件响应，会有一个监听

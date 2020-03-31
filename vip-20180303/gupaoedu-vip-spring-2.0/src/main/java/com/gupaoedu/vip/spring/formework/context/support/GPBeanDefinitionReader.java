@@ -12,18 +12,15 @@ import java.util.Properties;
 
 //用对配置文件进行查找，读取、解析
 public class GPBeanDefinitionReader {
-
     private final String SCAN_PACKAGE = "scanPackage";
-    //在配置文件中，用来获取自动扫描的包名的key
-    private Properties config = new Properties();
+    private Properties configProperties = new Properties();
     private List<String> registyBeanClasses = new ArrayList<String>();
 
     public GPBeanDefinitionReader(String... locations) {
         //在Spring中是通过BeanDefinitionReader去查找和定位
         InputStream is = this.getClass().getClassLoader().getResourceAsStream(locations[0].replace("classpath:", ""));
-
         try {
-            config.load(is);
+            configProperties.load(is);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -35,7 +32,7 @@ public class GPBeanDefinitionReader {
                 e.printStackTrace();
             }
         }
-        doScanner(config.getProperty(SCAN_PACKAGE));
+        doScanner(configProperties.getProperty(SCAN_PACKAGE));
     }
 
     public List<String> loadBeanDefinitions() {
@@ -55,20 +52,20 @@ public class GPBeanDefinitionReader {
     }
 
     //递归扫描所有的相关联的class，并且保存到一个List中
-    private void doScanner(String packageName) {
-        URL url = this.getClass().getResource("/" + packageName.replaceAll("\\.", "/"));
+    private void doScanner(String scanPackage) {
+        URL url = this.getClass().getResource("/" + scanPackage.replaceAll("\\.", "/"));
         File classDir = new File(url.getFile());
         for (File file : classDir.listFiles()) {
             if (file.isDirectory()) {
-                this.doScanner(packageName + "." + file.getName());
+                this.doScanner(scanPackage + "." + file.getName());
             } else {
-                registyBeanClasses.add(packageName + "." + file.getName().replace(".class", ""));
+                registyBeanClasses.add(scanPackage + "." + file.getName().replace(".class", ""));
             }
         }
     }
 
-    public Properties getConfig() {
-        return this.config;
+    public Properties getConfigProperties() {
+        return this.configProperties;
     }
 
     private String lowerFirstCase(String str) {

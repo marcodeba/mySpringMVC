@@ -13,7 +13,6 @@ import java.util.Map;
 @GPController
 @GPRequestMapping("/")
 public class PageAction {
-
     @GPAutowired
     IQueryService queryService;
 

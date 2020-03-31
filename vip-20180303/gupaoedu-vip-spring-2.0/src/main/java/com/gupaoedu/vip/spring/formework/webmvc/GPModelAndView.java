@@ -3,7 +3,6 @@ package com.gupaoedu.vip.spring.formework.webmvc;
 import java.util.Map;
 
 public class GPModelAndView {
-
     private String viewName;
     private Map<String, ?> model;
 

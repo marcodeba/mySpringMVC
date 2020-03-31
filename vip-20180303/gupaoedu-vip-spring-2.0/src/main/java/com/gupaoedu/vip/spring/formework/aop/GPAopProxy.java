@@ -6,7 +6,6 @@ import java.lang.reflect.Proxy;
 
 //默认就用JDK动态代理
 public class GPAopProxy implements InvocationHandler {
-
     private GPAopConfig config;
     private Object target;
 

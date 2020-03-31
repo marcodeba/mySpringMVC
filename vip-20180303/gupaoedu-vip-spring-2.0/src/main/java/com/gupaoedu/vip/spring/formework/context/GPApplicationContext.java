@@ -21,14 +21,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GPApplicationContext extends GPDefaultListableBeanFactory implements GPBeanFactory {
-
     private String[] configLocations;
-
     private GPBeanDefinitionReader reader;
-
     //用来保证注册式单例的容器
     private Map<String, Object> beanCacheMap = new HashMap<String, Object>();
-
     //用来存储所有的被代理过的对象
     private Map<String, GPBeanWrapper> beanWrapperMap = new ConcurrentHashMap<String, GPBeanWrapper>();
 
@@ -157,9 +153,9 @@ public class GPApplicationContext extends GPDefaultListableBeanFactory implement
 
     private GPAopConfig instantionAopConfig(GPBeanDefinition beanDefinition) throws Exception {
         GPAopConfig config = new GPAopConfig();
-        String expression = reader.getConfig().getProperty("pointCut");
-        String[] before = reader.getConfig().getProperty("aspectBefore").split("\\s");
-        String[] after = reader.getConfig().getProperty("aspectAfter").split("\\s");
+        String expression = reader.getConfigProperties().getProperty("pointCut");
+        String[] before = reader.getConfigProperties().getProperty("aspectBefore").split("\\s");
+        String[] after = reader.getConfigProperties().getProperty("aspectAfter").split("\\s");
 
         String className = beanDefinition.getBeanClassName();
         Class<?> clazz = Class.forName(className);
@@ -208,6 +204,6 @@ public class GPApplicationContext extends GPDefaultListableBeanFactory implement
     }
 
     public Properties getConfig() {
-        return this.reader.getConfig();
+        return this.reader.getConfigProperties();
     }
 }

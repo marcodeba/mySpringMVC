@@ -1,7 +1,6 @@
 package com.gupaoedu.vip.spring.demo.aspect;
 
 public class LogAspect {
-
     //在调用一个方法之前，执行before方法
     public void before() {
         //这个方法中的逻辑，是由我们自己写的

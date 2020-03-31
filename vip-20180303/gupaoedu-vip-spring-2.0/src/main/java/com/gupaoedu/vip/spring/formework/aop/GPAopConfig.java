@@ -10,7 +10,6 @@ import java.util.Map;
 //配置文件的目的：告诉Spring，哪些类的哪些方法需要增强，增强的内容是什么
 //对配置文件中所体现的内容进行封装
 public class GPAopConfig {
-
     //以目标对象需要增强的Method作为key，需要增强的代码内容作为value
     private Map<Method, GPAspect> points = new HashMap<Method, GPAspect>();
 
