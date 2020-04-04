@@ -33,7 +33,7 @@ public class GPDispatcherServlet extends HttpServlet {
 
     @Override
     public void init(ServletConfig config) {
-        //相当于把IOC容器初始化了
+        //初始化IOC容器
         GPApplicationContext context = new GPApplicationContext(config.getInitParameter(LOCATION));
 
         initStrategies(context);

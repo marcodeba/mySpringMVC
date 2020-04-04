@@ -14,7 +14,8 @@ import java.util.Properties;
 public class GPBeanDefinitionReader {
     private final String SCAN_PACKAGE = "scanPackage";
     private Properties configProperties = new Properties();
-    private List<String> registyBeanClasses = new ArrayList<String>();
+    // 保存扫描类的名称
+    private List<String> registryBeanClasses = new ArrayList<String>();
 
     public GPBeanDefinitionReader(String... locations) {
         //在Spring中是通过BeanDefinitionReader去查找和定位
@@ -24,28 +25,29 @@ public class GPBeanDefinitionReader {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (null != is) {
+            if (null != is) {
+                try {
                     is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
-        doScanner(configProperties.getProperty(SCAN_PACKAGE));
+        // 扫描class
+        this.doScanner(configProperties.getProperty(SCAN_PACKAGE));
     }
 
     public List<String> loadBeanDefinitions() {
-        return this.registyBeanClasses;
+        return this.registryBeanClasses;
     }
 
     //每注册一个className，就返回一个BeanDefinition，我自己包装
     //只是为了对配置信息进行一个包装
-    public GPBeanDefinition registerBeanDefinition(String className) {
-        if (this.registyBeanClasses.contains(className)) {
+    public GPBeanDefinition registerBeanDefinition(String beanDefinitionName) {
+        if (this.registryBeanClasses.contains(beanDefinitionName)) {
             GPBeanDefinition beanDefinition = new GPBeanDefinition();
-            beanDefinition.setBeanClassName(className);
-            beanDefinition.setFactoryBeanName(lowerFirstCase(className.substring(className.lastIndexOf(".") + 1)));
+            beanDefinition.setBeanClassName(beanDefinitionName);
+            beanDefinition.setFactoryBeanName(lowerFirstCase(beanDefinitionName.substring(beanDefinitionName.lastIndexOf(".") + 1)));
             return beanDefinition;
         }
         return null;
@@ -59,7 +61,7 @@ public class GPBeanDefinitionReader {
             if (file.isDirectory()) {
                 this.doScanner(scanPackage + "." + file.getName());
             } else {
-                registyBeanClasses.add(scanPackage + "." + file.getName().replace(".class", ""));
+                registryBeanClasses.add(scanPackage + "." + file.getName().replace(".class", ""));
             }
         }
     }

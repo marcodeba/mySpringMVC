@@ -33,15 +33,17 @@ public class GPApplicationContext extends GPDefaultListableBeanFactory implement
         refresh();
     }
 
+    // beanName->beanDefinition->beanInstance->beanwrapper
     @Override
     public void refresh() {
+        // 读取配置信息到内存
         reader = new GPBeanDefinitionReader(configLocations);
 
-        //加载
+        //加载beanNames
         List<String> beanDefinitionNames = reader.loadBeanDefinitions();
 
         //注册,把beanName组装成BeanDefinition，并放入BeanDefinitionMap
-        doRegisty(beanDefinitionNames);
+        doRegistry(beanDefinitionNames);
 
         //依赖注入（lazy-init = false），要是执行依赖注入
         //在这里自动调用getBean方法
@@ -92,7 +94,7 @@ public class GPApplicationContext extends GPDefaultListableBeanFactory implement
     }
 
     //真正的将BeanDefinitions注册到beanDefinitionMap中
-    private void doRegisty(List<String> beanDefinitionNames) {
+    private void doRegistry(List<String> beanDefinitionNames) {
         try {
             for (String beanDefinitionName : beanDefinitionNames) {
                 Class<?> clazz = Class.forName(beanDefinitionName);
@@ -104,8 +106,7 @@ public class GPApplicationContext extends GPDefaultListableBeanFactory implement
                     this.beanDefinitionMap.put(beanDefinition.getFactoryBeanName(), beanDefinition);
                 }
 
-                Class<?>[] interfaces = clazz.getInterfaces();
-                for (Class<?> i : interfaces) {
+                for (Class<?> i : clazz.getInterfaces()) {
                     this.beanDefinitionMap.put(i.getName(), beanDefinition);
                 }
             }
@@ -179,14 +180,14 @@ public class GPApplicationContext extends GPDefaultListableBeanFactory implement
     //传一个BeanDefinition，就返回一个实例Bean
     private Object instantionBean(GPBeanDefinition beanDefinition) {
         Object instance;
-        String className = beanDefinition.getBeanClassName();
+        String beanName = beanDefinition.getBeanClassName();
         try {
-            if (this.beanCacheMap.containsKey(className)) {
-                instance = beanCacheMap.get(className);
+            if (this.beanCacheMap.containsKey(beanName)) {
+                instance = beanCacheMap.get(beanName);
             } else {
-                Class<?> clazz = Class.forName(className);
+                Class<?> clazz = Class.forName(beanName);
                 instance = clazz.newInstance();
-                this.beanCacheMap.put(className, instance);
+                this.beanCacheMap.put(beanName, instance);
             }
             return instance;
         } catch (Exception e) {

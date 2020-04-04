@@ -8,9 +8,11 @@ import java.util.Map;
 //专人干专事
 public class GPHandlerAdapter {
     private Map<String, Integer> paramMapping;
+
     public GPHandlerAdapter(Map<String, Integer> paramMapping) {
         this.paramMapping = paramMapping;
     }
+
     public boolean supports(Object handler) {
         return (handler instanceof GPHandlerMapping);
     }
