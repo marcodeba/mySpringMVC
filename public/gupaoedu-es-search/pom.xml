@@ -9,7 +9,7 @@
 
 	<properties>
 		<!-- dependency versions -->
-		<spring.version>3.2.6.RELEASE</spring.version>
+		<spring.version>5.2.20.RELEASE</spring.version>
 		<servlet.api.version>2.4</servlet.api.version>
     	<maven.test.skip>true</maven.test.skip>
 	</properties>
